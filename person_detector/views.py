@@ -74,7 +74,8 @@ def post_database(request):
     return render(request, 'add_database.html', context)
 
 def delete(request, delete_id):
-    Post.objects.filter(id = delete_id).delete()
+    objcet = Post.objects.get(id = delete_id)
+    objcet.delete()
     pesan = 'Data berhasil dihapus'            
     messages.success(request, pesan)
 

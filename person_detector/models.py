@@ -8,3 +8,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def delete(self, *args, **kwargs):
+        self.picture.delete()
+        super().delete(*args, **kwargs)  
