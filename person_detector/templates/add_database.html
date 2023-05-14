@@ -1,0 +1,29 @@
+{% extends 'database.html' %}
+
+{% block add_database %}
+        
+        <div class="container shadow rounded mt-3">
+            <h5>{{title}}</h5>
+            <form method="POST" enctype="multipart/form-data" class="col">
+                {% csrf_token %}
+        
+                <!-- <div class="form-group container shadow rounded mt-3 mb-3"> -->
+                    
+                    {% for form in post_form %}
+                        <div class="col-auto">
+                            {{form.label}}
+                        </div>
+                        <div class="col-auto">
+                            {{form}}
+                        </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn btn-success my-4">Submit</button>
+                    <a href="{% url 'database' %}" class="btn btn-danger">Back</a>
+                <!-- </div> -->
+            </form>
+        </div>
+{% endblock add_database %}
+
+
+    

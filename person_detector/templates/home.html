@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    {{title}}
+{% endblock title %}
+
+
+{% block list %}
+<li class="nav-item ps-4">
+    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'database' %}">Database</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'gallery' %}">Gallery</a>
+  </li>    
+{% endblock list %}
+    
+
+{% block content %}
+<h1>Ini HOME</h1>
+{% endblock content %}
+    
