@@ -37,13 +37,14 @@
           {{msg}}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>      
-        
         {% endfor %}
                  
       {% endif %}
         
 
-      <a href="{% url 'add-database' %}" class="btn btn-primary my-1">Add Data</a>
+      <a href="{% url 'add-database' %}" class="btn btn-primary my-1">Add Person</a>
+      <a href="{% url 'train_data' %}" class="btn btn-success my-1">Train Data</a>
+      
         
       <!-- Filter -->
       <div class="row mt-2 mb-2">
@@ -58,6 +59,9 @@
                   <div class="col-auto">
                     {{myFilters.form.name}}
                   </div>
+                  
+                  <!-- {{ myFilters.form.as_p }} -->
+                    
                   <div class="col-auto">
                     <button type="submit" class="btn btn-primary">Search</button>
                   </div>
@@ -85,6 +89,7 @@
               <th scope="col" class="text-center">Number</th>
               <th scope="col" class="text-center">Picture</th>
               <th scope="col" class="text-center">Name</th>
+              <th scope="col" class="text-center">Full Name</th>
               <th scope="col" class="text-center">Date Created</th>
               <th scope="col" class="text-center">Delete</th>
               <th scope="col" class="text-center">Update</th>
@@ -100,6 +105,7 @@
                   {% endif %}                  
                 </td>
                 <td class="text-center align-middle">{{data.name}}</td>
+                <td class="text-center align-middle">{{data.full_name}}</td>
                 <td class="text-center align-middle">{{data.date_created}}</td>
                 <td class="text-center align-middle">
                   <!-- <a href="{% url 'delete_data' data.id %}" class="btn btn-danger">Delete</a> -->
@@ -109,7 +115,7 @@
                 </td>
                 <!-- Modal -->
                 <div class="modal fade" id="delete-{{data.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
+                  <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">DELETE</h1>

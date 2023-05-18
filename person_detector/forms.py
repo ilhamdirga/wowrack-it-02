@@ -7,6 +7,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = [
             'name',
+            'full_name',
             'picture'
         ]
     
@@ -14,15 +15,15 @@ class PostForm(forms.ModelForm):
             'name': forms.TextInput(
                 attrs = {
                     'class': 'form-control',
-                    'placeholder': 'Fill name'
+                    'placeholder': 'Fill with one word and this field can\'t be updated'
                 }
             ),
-            'picture': forms.FileInput(
-                attrs= {
+            'full_name': forms.TextInput(
+                attrs = {
                     'class': 'form-control',
-                    'type': 'file'
+                    'placeholder': 'Fill with your full name'
                 }
-            )
+            ),
         }
 
         
