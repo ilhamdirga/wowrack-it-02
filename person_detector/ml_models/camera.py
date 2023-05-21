@@ -1,23 +1,40 @@
 from PIL import Image
-import os
 from keras_facenet import FaceNet
-import numpy as np
 from numpy import asarray
 from numpy import expand_dims
 from django.conf import settings
+from person_detector.models import DetectedFace
+
+import os
+import numpy as np
 import pickle
 import cv2
 import datetime
 import time
-import asyncio
-from person_detector.models import DetectedFace
+import paho.mqtt.client as mqtt
+import json
+
 
 HaarCascade = cv2.CascadeClassifier(cv2.samples.findFile(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'))
 MyFaceNet = FaceNet()
 
+#untuk tampilan 720p pada frame
 def make_720p(cap):
         cap.set(3, 1280)
         cap.set(4, 720)
+
+def send_mqtt_message(message):
+    try:
+        client = mqtt.Client()
+        client.connect("localhost", 1883)
+
+        topic = 'dirgan'
+        json_message = json.dumps(message)
+        client.publish(topic, json_message)
+
+        client.disconnect()
+    except Exception as e:
+        print("Error saat mengirim pesan MQTT:", str(e))
 
 def open_camera():
     cap = cv2.VideoCapture(0)
@@ -40,8 +57,7 @@ def open_camera():
         
         x1, y1 = abs(x1), abs(y1)
         x2, y2 = x1 + width, y1 + height
-        
-        
+    
         gbr = cv2.cvtColor(gbr1, cv2.COLOR_BGR2RGB)
         gbr = Image.fromarray(gbr)                  # konversi dari OpenCV ke PIL
         gbr_array = asarray(gbr)
@@ -52,12 +68,7 @@ def open_camera():
         face = face.resize((160,160))
         face = asarray(face)
         
-    #     face = face.astype('float32')
-    #     mean, std = face.mean(), face.std()
-    #     face = (face - mean) / std
-        
         face = expand_dims(face, axis=0)
-    #     signature = MyFaceNet.predict(face)
         signature = MyFaceNet.embeddings(face)
 
         
@@ -70,11 +81,16 @@ def open_camera():
                 identity = key
         if identity:
             current_time = datetime.datetime.now()
-            if time.time() - last_print_time >= 4:
+            if time.time() - last_print_time >= 2:
                 detected_face = DetectedFace.objects.create(name=identity, detected_time=current_time)
                 detected_face.save()
                 last_print_time = time.time()  # Memperbarui waktu terakhir pesan dicetak dan data disimpan
                 
+                message = {
+                    'name': identity,
+                    'timestamp': str(current_time)
+                }
+                send_mqtt_message(message)
                 print(f"Nama wajah terdeteksi: {identity}; Waktu: {current_time}")
                 
         cv2.putText(gbr1,identity, (100,100),cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)

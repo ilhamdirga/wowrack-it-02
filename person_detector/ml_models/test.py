@@ -1,18 +1,16 @@
-import os
+from django.conf import settings
 from os import listdir
 from PIL import Image as Img
 from numpy import asarray
 from numpy import expand_dims
 from matplotlib import pyplot
-#from keras.models import load_model
-import numpy as np
-import tensorflow as tf
 from keras_facenet import FaceNet
 
 import pickle
 import cv2
-
-from django.conf import settings
+import os
+import numpy as np
+import tensorflow as tf
 
 HaarCascade = cv2.CascadeClassifier(cv2.samples.findFile(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'))
 MyFaceNet = FaceNet()
@@ -51,26 +49,11 @@ def train(folder):
             face = face.resize((160,160))
             face = asarray(face)
 
-        #     face = face.astype('float32')
-        #     mean, std = face.mean(), face.std()
-        #     face = (face - mean) / std
-
-
             face = expand_dims(face, axis=0)
-        #     signature = MyFaceNet.predict(face)
             signature = MyFaceNet.embeddings(face)
 
             database[os.path.splitext(filename)[0]]=signature
             
-    # myfile = open("mywebsite/person_detector/ml_models/data.pkl", "wb")
-    # pickle.dump(database, myfile)
-    # myfile.close()
     pickle_file = os.path.join(settings.BASE_DIR, 'person_detector', 'ml_models', 'data.pkl')
     with open(pickle_file, 'wb') as myfile:
         pickle.dump(database, myfile)
-
-
-
-
-# train()
-# print('data berhasil ditrain')

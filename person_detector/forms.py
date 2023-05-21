@@ -1,5 +1,4 @@
 from django import forms
-
 from .models import Post
 
 class PostForm(forms.ModelForm):
@@ -7,7 +6,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = [
             'name',
-            'full_name',
+            'fullName',
             'picture'
         ]
     
@@ -18,7 +17,7 @@ class PostForm(forms.ModelForm):
                     'placeholder': 'Fill with one word and this field can\'t be updated'
                 }
             ),
-            'full_name': forms.TextInput(
+            'fullName': forms.TextInput(
                 attrs = {
                     'class': 'form-control',
                     'placeholder': 'Fill with your full name'

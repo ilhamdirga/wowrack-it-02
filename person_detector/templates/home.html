@@ -14,7 +14,7 @@
     <a class="nav-link" href="{% url 'database' %}">Database</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'gallery' %}">Gallery</a>
+    <a class="nav-link" href="{% url 'gallery' %}">Log Out</a>
   </li>    
 {% endblock list %}
     
@@ -79,6 +79,8 @@
   </div>
   <!-- Akhir Filter-->
 
+  <h5>Detected Name Record</h5>
+
   <!-- Tabel -->
   <div class="scroll">
     <table class="table table-striped table-hover table-bordered table-sm rounded rounded-lg">
@@ -87,6 +89,7 @@
           <th scope="col" class="text-center">No.</th>
           <th scope="col" class="text-center">Name Detected</th>
           <th scope="col" class="text-center">Time</th>
+          <!-- <th scope="col" class="text-center">Day</th> -->
         </tr>
       </thead>
       <tbody>
@@ -95,6 +98,7 @@
             <td scope="row" class="text-center align-middle">{{forloop.counter}}</td>
             <td class="text-center align-middle">{{data.name}}</td>
             <td class="text-center align-middle">{{data.detected_time}}</td>
+            <!-- <td class="text-center align-middle">{{data.detected_day}}</td> -->
           </tr>
         {% endfor %}             
       </tbody>

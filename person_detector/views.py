@@ -7,12 +7,12 @@ from .ml_models.test import train
 from .ml_models.camera import open_camera
 from .filters import DatabaseFilter, DetectedFilter
 from django.conf import settings
-
+from datetime import date
 import os
 
 # Create your views here.
 def home(request):
-    detected = DetectedFace.objects.all()
+    detected = DetectedFace.objects.all().order_by('-id')
     myFilters = DetectedFilter(request.GET, queryset=detected)
     detected = myFilters.qs
     total_data = len(detected) #untuk menghitung jumlah object
@@ -48,6 +48,12 @@ def post_database(request):
     if request.method == "POST":
         if post_form.is_valid():
             name = post_form.cleaned_data['name']
+            
+            # validasi agar name yang diinput tidak sama dengan name yang sudah ada
+            if Post.objects.filter(name=name).exists():
+                messages.error(request, 'Nama sudah ada di database.')
+                return redirect('database')
+
             picture = request.FILES['picture']
             post = post_form.save(commit=False)
             post.picture = picture
@@ -93,24 +99,31 @@ def delete(request, delete_id):
 def update(request, update_id):
     post_person = Post.objects.all()
     update_data = Post.objects.get(id=update_id)
-
     if request.method == "POST":
         form_data = PostForm(request.POST, request.FILES, instance=update_data)
+        form_data.fields['name'].disabled = True
         if form_data.is_valid():
-            form_data.fields['name'].disabled = True
-            form_data.save()
+            if 'picture' in request.FILES:
+                old_picture_path = update_data.picture.path
+                if os.path.exists(old_picture_path):
+                    os.remove(old_picture_path)
+            # Simpan gambar baru
+            picture = form_data.cleaned_data['picture']
+            update_data.picture = picture
+            
+            update_data.save()
+
             pesan = 'Data berhasil diupdate'
             messages.success(request, pesan)
             return redirect('database')
     else:
         form_data = PostForm(instance=update_data)
         form_data.fields['name'].disabled = True
-    
-    context = {
-            'title': 'Update Database',
-            'post_form': form_data,
-            'post': post_person
-        }
+        context = {
+                'title': 'Update Database',
+                'post_form': form_data,
+                'post': post_person
+            }
     return render(request, 'add_database.html', context)
 
 

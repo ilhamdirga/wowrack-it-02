@@ -2,9 +2,9 @@ from django import forms
 from .models import Post, DetectedFace
 from calendar import monthrange
 from django.utils import timezone
+from datetime import date
 
 import django_filters
-
 
 class DatabaseFilter(django_filters.FilterSet):
     start_date = django_filters.DateFilter(field_name='date_created', lookup_expr='gte', label='Start')
@@ -41,7 +41,7 @@ class DetectedFilter(django_filters.FilterSet):
     )
 
     def filter_detected(self, queryset, name, value):
-        today = timezone.now().date()
+        today = date.today()
         if value == 'today':
             return queryset.filter(detected_time__date=today)
         elif value == 'this_week':
@@ -55,41 +55,18 @@ class DetectedFilter(django_filters.FilterSet):
         else:
             return queryset
         
-    start_date = django_filters.DateFilter(field_name='detected_time',
+    start_date = django_filters.DateFilter(field_name='detected_day',
                                            lookup_expr='gte',
                                             label='Range',
-                                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MM/DD/YY'}))
-    end_date = django_filters.DateFilter(field_name='detected_time',
+                                            widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'MM/DD/YY'}))
+    end_date = django_filters.DateFilter(field_name='detected_day',
                                          lookup_expr='lte',
                                           label='-',
-                                          widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MM/DD/YY'}))
+                                          widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'MM/DD/YY'}))
                 
     class Meta:
         model = DetectedFace
         fields = [
             'name',
             'detected_time',
-            'start_date',
-            'end_date'
         ]
-
-        # widgets = {
-        #     'name': forms.TextInput(
-        #         attrs = {
-        #             'class': 'form-control',
-        #             'placeholder': 'Fill name'
-        #         }
-        #     ),
-        #     'start_date': forms.TextInput(
-        #         attrs = {
-        #             'class': 'form-control',
-        #             'placeholder': 'MM/DD/YY'
-        #         }
-        #     ),
-        #     'end_date': forms.TextInput(
-        #         attrs = {
-        #             'class': 'form-control',
-        #             'placeholder': 'MM/DD/YY'
-        #         }
-        #     ),
-        # }
