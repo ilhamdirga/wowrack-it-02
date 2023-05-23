@@ -9,7 +9,7 @@ class Camera(models.Model):
     date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}. {self.id}'
     
 @receiver(post_save, sender=Camera)
 def create_camcard(sender, instance, created, **kwargs):
@@ -22,13 +22,17 @@ class CamCard(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name.name
+        return f'{self.name.name}. {self.id}'
     
 class Gallery(models.Model):
     name = models.ForeignKey(Camera, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='memory_tray_detector', null=True)
     quantity = models.IntegerField(null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField()
 
     def __str__(self):
-        return self.name.name
+        return self.name.name, self.id
+    
+    def delete(self, *args, **kwargs):
+        self.picture.delete()
+        super().delete(*args, **kwargs)  

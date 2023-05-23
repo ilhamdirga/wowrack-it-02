@@ -4,9 +4,9 @@ import pickle
 from datetime import datetime
 
 from django.conf import settings
-from memory_tray_detector.models import Gallery, Camera
+from memory_tray_detector.models import Gallery, Camera, CamCard
 
-def open_camera(save_folder):
+def open_camera(save_folder, cam_id):
     cam = cv2.VideoCapture(0)
 
     # Cek apakah file counter sudah ada
@@ -19,12 +19,12 @@ def open_camera(save_folder):
 
     while True:
         check, frame = cam.read()
-        cv2.imshow('video', frame)
+        cv2.imshow(f'{Camera.objects.get(id = cam_id).name}', frame)
         key = cv2.waitKey(1)
 
         if key == 32:
             # Ambil instance Camera pertama
-            camera = Camera.objects.first()
+            camera = Camera.objects.get(id = cam_id)
 
             # Generate photo name
             photo_name = f'{camera.name}-{photo_counter}.jpg'

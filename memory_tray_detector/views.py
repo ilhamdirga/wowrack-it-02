@@ -31,7 +31,7 @@ def camera(request):
     }
     return render(request, 'memory_tray_detector/camera.html', context)
 
-def open_cam(request):
+def open_cam(request, cam_id):
     if request.method == 'GET':
         # Cek apakah kamera sudah terbuka sebelumnya
         if 'camera_open' in request.session:
@@ -40,7 +40,7 @@ def open_cam(request):
 
         save_folder = os.path.join(settings.BASE_DIR, 'static', 'images', 'memory_tray_detector')
         request.session['camera_open'] = True
-        open_camera(save_folder)
+        open_camera(save_folder,cam_id)
         del request.session['camera_open']  # Hapus status kamera terbuka setelah selesai
 
     return redirect('memory_tray_detector:home')
@@ -75,6 +75,13 @@ def delete(request, delete_id):
     messages.success(request, 'Camera berhasil dihapus')
 
     return redirect('memory_tray_detector:camera')
+
+def delete_gallery(request, delete_id):
+    gal_object = Gallery.objects.get(id = delete_id)
+    gal_object.delete()
+    messages.success(request, 'Data berhasil dihapus')
+
+    return redirect('memory_tray_detector:gallery')
 
 def update(request, update_id):
     cam_update = Camera.objects.get(id = update_id)
