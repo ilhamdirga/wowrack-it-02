@@ -1,5 +1,5 @@
 from django import forms
-from .models import Camera
+from .models import Camera, Gallery
 
 import django_filters
 
@@ -18,8 +18,13 @@ class CameraFilter(django_filters.FilterSet):
 
 class GalleryFilter(django_filters.FilterSet):
     name = django_filters.ChoiceFilter(
-        label="Name",
+        label="Camera",
         choices=Camera.objects.values_list('name', 'name').distinct(),
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+    class Meta:
+        model = Gallery
+        fields = [
+            'name'
+        ]
     

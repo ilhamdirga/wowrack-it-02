@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Camera
+from .models import Camera, CamCard, Gallery
 from .forms import AddCameraForm
-from .filters import CameraFilter
+from .filters import CameraFilter, GalleryFilter
+from .ml_models.camera import open_camera
+from django.conf import settings
+# from memory_tray_detector.models import Gallery
+
+import os
 
 # Create your views here.
 def home(request):
-    cam_card = Camera.objects.all()
+    cam_card = CamCard.objects.all()
     context = {
         'title': 'Memory Tray Detector | Home',
         'cam_card': cam_card
@@ -18,8 +23,6 @@ def camera(request):
     total_cam = len(camera)
     myFilters = CameraFilter(request.GET, queryset=camera)
     camera = myFilters.qs
-
-
     context = {
         'title': 'Memory Tray Detector : Camera',
         'camera': camera,
@@ -27,6 +30,20 @@ def camera(request):
         'myFilters': myFilters
     }
     return render(request, 'memory_tray_detector/camera.html', context)
+
+def open_cam(request):
+    if request.method == 'GET':
+        # Cek apakah kamera sudah terbuka sebelumnya
+        if 'camera_open' in request.session:
+            messages.error(request, 'Camera sedang terbuka')
+            return redirect('memory_tray_detector:home')
+
+        save_folder = os.path.join(settings.BASE_DIR, 'static', 'images', 'memory_tray_detector')
+        request.session['camera_open'] = True
+        open_camera(save_folder)
+        del request.session['camera_open']  # Hapus status kamera terbuka setelah selesai
+
+    return redirect('memory_tray_detector:home')
 
 def add_camera(request):
     add_form = AddCameraForm(request.POST or None)
@@ -79,8 +96,16 @@ def update(request, update_id):
     return render(request, 'memory_tray_detector/add_camera.html', context)
 
 def gallery(request):
+    gall = Gallery.objects.all().order_by('-id')
+    total_pic = len(gall)
+
+    myFilters = GalleryFilter(request.GET, queryset=gall)
+    gall = myFilters.qs
     context = {
-        'title': 'Memory Tray Detector | Gallery'
+        'title': 'Memory Tray Detector | Gallery',
+        'gallery': gall,
+        'myFilters':myFilters,
+        'total_pic': total_pic
     }
     return render(request, 'memory_tray_detector/gallery.html', context)
 
