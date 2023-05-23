@@ -40,6 +40,9 @@ def open_camera():
     cap = cv2.VideoCapture(0)
     last_print_time = time.time()
 
+    if not cap.isOpened():
+        return False, "Gagal membuka kamera"
+
     # make_720p(cap)
     while True:        
         file_path = os.path.join(settings.BASE_DIR, 'person_detector','ml_models', 'data.pkl')
@@ -86,9 +89,10 @@ def open_camera():
                 detected_face.save()
                 last_print_time = time.time()  # Memperbarui waktu terakhir pesan dicetak dan data disimpan
                 
+                formatted_time = current_time.strftime('%d%m%Y')
                 message = {
                     'name': identity,
-                    'timestamp': str(current_time)
+                    'timestamp': formatted_time
                 }
                 send_mqtt_message(message)
                 print(f"Nama wajah terdeteksi: {identity}; Waktu: {current_time}")
@@ -104,4 +108,6 @@ def open_camera():
             
     cv2.destroyAllWindows()
     cap.release()
+
+    return True, None
 

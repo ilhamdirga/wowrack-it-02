@@ -1,11 +1,11 @@
 from django.db import models
 
-# Create your models here.
+# untuk menambahkan data person
 class Post(models.Model):
     name = models.CharField(max_length=20)
     fullName = models.CharField(max_length=50)
     date_created = models.DateField(auto_now_add=True)
-    picture = models.ImageField(null=True)
+    picture = models.ImageField(upload_to='person_detector', null=True)
 
     def __str__(self):
         return self.name
@@ -14,6 +14,7 @@ class Post(models.Model):
         self.picture.delete()
         super().delete(*args, **kwargs)  
 
+# untuk menyimpan person yang terdeteksi
 class DetectedFace(models.Model):
     name = models.CharField(max_length=100)
     detected_time = models.DateTimeField()

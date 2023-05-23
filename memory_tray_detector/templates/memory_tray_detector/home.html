@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    {{title}}
+{% endblock title %}
+
+{% block list %}
+  <li class="nav-item ps-4">
+    <a class="nav-link active" aria-current="page" href="{% url 'memory_tray_detector:home' %}">Home</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'memory_tray_detector:camera' %}">Camera</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'memory_tray_detector:gallery' %}">Gallery</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'memory_tray_detector:logout' %}">Log Out</a>
+  </li>    
+{% endblock list %}
+
+
+{% block content %}
+  <div class="container mt-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+
+    <h5>Memory Tray Detector | Home</h5>
+
+    <!-- Card -->
+    <div class="align-items-center">
+      <div class="row">
+        {% for card in cam_card %}
+          <div class="col-sm-3">
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title text-center">{{card.name}}</h5>
+                <p class="card-text">Quantity : {{card.quantity}}</p>
+                <p class="card-text">Last Capture : {{card.timestamp}}</p>
+                <div class="text-center">
+                  <a href="#" class="btn btn-primary">Open Camera</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div> 
+    <!-- Akhir Card -->
+
+  </div>
+{% endblock content %}
+  
+    

@@ -37,6 +37,7 @@ class DetectedFilter(django_filters.FilterSet):
         label='Period',
         choices=CHOICES,
         method='filter_detected',
+        initial='today',
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 

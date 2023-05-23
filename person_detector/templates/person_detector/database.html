@@ -8,13 +8,13 @@
 
 {% block list %}
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'home' %}">Home</a>
+    <a class="nav-link" href="{% url 'person_detector:home' %}">Home</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link active" aria-current="page" href="{% url 'database' %}">Database</a>
+    <a class="nav-link active" aria-current="page" href="{% url 'person_detector:database' %}">Database</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'gallery' %}">Log Out</a>
+    <a class="nav-link" href="{% url 'person_detector:gallery' %}">Log Out</a>
   </li>
 {% endblock list %}
   
@@ -28,22 +28,22 @@
     <div class="container mt-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
 
       <h5>Person Detector | Database</h5>
-              
+
+
+      <a href="{% url 'person_detector:add-database' %}" class="btn btn-primary my-1">Add Person</a>
+      <a href="{% url 'person_detector:train_data' %}" class="btn btn-success my-1">Train Data</a>
       
-      {% if messages %}
-        {% for msg in messages %}
+      <!-- messages -->
+      <div>
+        {% if messages %}
+         {% for msg in messages %}
             <div class="alert {% if msg.tags == 'success' %}alert-success{% elif msg.tags == 'error' %}alert-danger{% endif %} alert-dismissible fade show d-sm-inline-flex" role="alert">
                 {{ msg }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        {% endfor %}
-      {% endif %}
-
-
-      <a href="{% url 'add-database' %}" class="btn btn-primary my-1">Add Person</a>
-      <a href="{% url 'train_data' %}" class="btn btn-success my-1">Train Data</a>
-      
-        
+          {% endfor %}
+        {% endif %}
+      </div>
       <!-- Filter -->
       <div class="row mt-2 mb-2">
         <div class="col">
@@ -56,15 +56,12 @@
                   </div>
                   <div class="col-auto">
                     {{myFilters.form.name}}
-                  </div>
-                  
-                  <!-- {{ myFilters.form.as_p }} -->
-                    
+                  </div>                    
                   <div class="col-auto">
                     <button type="submit" class="btn btn-primary">Search</button>
                   </div>
                   <div class="col-auto">
-                    <a href="{% url 'database' %}" class="btn btn-danger">Back to See All</a>
+                    <a href="{% url 'person_detector:database' %}" class="btn btn-danger">Back to See All</a>
                   </div>
     
                   
@@ -106,7 +103,6 @@
                 <td class="text-center align-middle">{{data.fullName}}</td>
                 <td class="text-center align-middle">{{data.date_created}}</td>
                 <td class="text-center align-middle">
-                  <!-- <a href="{% url 'delete_data' data.id %}" class="btn btn-danger">Delete</a> -->
                   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{data.id}}">
                     Delete
                   </button>
@@ -123,14 +119,14 @@
                         Are you sure to delete <strong>"{{data.name}}"</strong> data?
                       </div>
                       <div class="modal-footer">
-                        <a href="{% url 'delete_data' data.id %}" class="btn btn-danger">Delete</a>
+                        <a href="{% url 'person_detector:delete_data' data.id %}" class="btn btn-danger">Delete</a>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                       </div>
                     </div>
                   </div>
                 </div>
                 <td class="text-center align-middle">
-                  <a href="{% url 'update_data' data.id %}" class="btn btn-warning">Update</a>
+                  <a href="{% url 'person_detector:update_data' data.id %}" class="btn btn-warning">Update</a>
                 </td>
               </tr>
             {% endfor %}             
@@ -139,38 +135,7 @@
       </div>
       <!-- Akhir Tabel -->
 
-    </div>
-
-   <!-- pagination -->
-   <!-- {% if items_page %}
-      {% if items_page.has_other_pages %}
-      <div class="text-center">
-        <div class="btn-group" role="group" aria-label="Item pagination">
-          {% if items_page.has_previous %}
-              <a href="?page={{ items_page.previous_page_number }}" class="btn btn-outline-primary">&laquo;</a>
-          {% endif %}
-
-          {% for page_number in items_page.paginator.page_range %}
-              {% if items_page.number == page_number %}
-                  <button class="btn btn-outline-primary active">
-                      <span>{{ page_number }} <span class="sr-only">(current)</span></span>
-                  </button>
-              {% else %}
-                  <a href="?page={{ page_number }}" class="btn btn-outline-primary">
-                      {{ page_number }}
-                  </a>
-              {% endif %}
-          {% endfor %}
-
-          {% if items_page.has_next %}
-              <a href="?page={{ items_page.next_page_number }}" class="btn btn-outline-primary">&raquo;</a>
-          {% endif %}
-      </div>
-      </div>
-      {% endif %}    
-   {% endif %} -->
-   <!-- akhir pagination -->
-    
+    </div>    
           
 {% endblock content %}
     

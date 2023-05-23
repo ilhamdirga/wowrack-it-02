@@ -8,12 +8,17 @@ from .ml_models.camera import open_camera
 from .filters import DatabaseFilter, DetectedFilter
 from django.conf import settings
 from datetime import date
+
 import os
 
 # Create your views here.
 def home(request):
     detected = DetectedFace.objects.all().order_by('-id')
     myFilters = DetectedFilter(request.GET, queryset=detected)
+
+    if not request.GET:
+        myFilters.form.initial['detected_time'] = 'today'
+        
     detected = myFilters.qs
     total_data = len(detected) #untuk menghitung jumlah object
     context = {
@@ -22,12 +27,17 @@ def home(request):
         'myFilters': myFilters,
         'total_data': total_data
     }
-    return render(request, 'home.html', context)
+    return render(request, 'person_detector/home.html', context)
 
 def cam(request):
     if request.method == 'GET':
-        open_camera()
-    return redirect('home')
+        success, error = open_camera()
+
+        if success:
+            messages.success(request, 'Camera Has Been Succesfully Opened')
+        else:
+            messages.error(request, f'Camera Cannot Opened with error: {error}')
+    return redirect('person_detector:home')
 
 def database(request):
     post_person = Post.objects.all()
@@ -40,7 +50,7 @@ def database(request):
         'myFilters': myFilters,
         'total_data': total_data
     }
-    return render(request, 'database.html', context)
+    return render(request, 'person_detector/database.html', context)
 
 def post_database(request):
     post_person = Post.objects.all() 
@@ -52,7 +62,7 @@ def post_database(request):
             # validasi agar name yang diinput tidak sama dengan name yang sudah ada
             if Post.objects.filter(name=name).exists():
                 messages.error(request, 'Nama sudah ada di database.')
-                return redirect('database')
+                return redirect('person_detector:database')
 
             picture = request.FILES['picture']
             post = post_form.save(commit=False)
@@ -67,7 +77,7 @@ def post_database(request):
                 name = person.name
             pesan = name + ' berhasil ditambahkan'            
             messages.success(request, pesan)
-            return redirect('database')
+            return redirect('person_detector:database')
     
     myFilters = DatabaseFilter(request.GET, queryset=post_person)
     post_person = myFilters.qs  
@@ -77,24 +87,24 @@ def post_database(request):
         'post': post_person,
         'myFilters': myFilters
     }
-    return render(request, 'add_database.html', context)
+    return render(request, 'person_detector/add_database.html', context)
 
 def train_data(request):
-    image_folder = 'static/images/'
+    image_folder = 'static/images/person_detector/'
     folder = os.path.join(settings.BASE_DIR, image_folder)
     
     train(folder)
 
     if True:
         messages.success(request, 'Data berhasil ditrain')
-        return redirect('database')
+        return redirect('person_detector:database')
 
 def delete(request, delete_id):
     objcet = Post.objects.get(id = delete_id)
     objcet.delete()
     pesan = 'Data berhasil dihapus'            
     messages.success(request, pesan)
-    return redirect('database')
+    return redirect('person_detector:database')
 
 def update(request, update_id):
     post_person = Post.objects.all()
@@ -103,6 +113,7 @@ def update(request, update_id):
         form_data = PostForm(request.POST, request.FILES, instance=update_data)
         form_data.fields['name'].disabled = True
         if form_data.is_valid():
+            # menghapus picture jika sudah ada
             if 'picture' in request.FILES:
                 old_picture_path = update_data.picture.path
                 if os.path.exists(old_picture_path):
@@ -110,12 +121,11 @@ def update(request, update_id):
             # Simpan gambar baru
             picture = form_data.cleaned_data['picture']
             update_data.picture = picture
-            
             update_data.save()
 
             pesan = 'Data berhasil diupdate'
             messages.success(request, pesan)
-            return redirect('database')
+            return redirect('person_detector:database')
     else:
         form_data = PostForm(instance=update_data)
         form_data.fields['name'].disabled = True
@@ -124,11 +134,11 @@ def update(request, update_id):
                 'post_form': form_data,
                 'post': post_person
             }
-    return render(request, 'add_database.html', context)
+    return render(request, 'person_detector/add_database.html', context)
 
 
 def gallery(request):
     context = {
         'title': 'Person Detector | Gallery'
     }
-    return render(request, 'gallery.html', context)
+    return render(request, 'person_detector/gallery.html', context)

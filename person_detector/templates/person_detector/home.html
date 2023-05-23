@@ -8,13 +8,13 @@
 
 {% block list %}
 <li class="nav-item ps-4">
-    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+    <a class="nav-link active" aria-current="page" href="{% url 'person_detector:home' %}">Home</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'database' %}">Database</a>
+    <a class="nav-link" href="{% url 'person_detector:database' %}">Database</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'gallery' %}">Log Out</a>
+    <a class="nav-link" href="{% url 'person_detector:gallery' %}">Log Out</a>
   </li>    
 {% endblock list %}
     
@@ -25,8 +25,18 @@
   <h5>Person Detector | Home</h5>
 
   <div class="align-middle">
-    <a href="{% url 'open_cam' %}" class="btn btn-success my-1">START DETECTION</a>
-  </div>    
+    <a id="start-detection-btn" href="{% url 'person_detector:open_cam' %}" class="btn btn-success my-1">START DETECTION</a>
+  </div>   
+
+  <!-- messages -->
+  {% if messages %}
+        {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'success' %}alert-success{% elif msg.tags == 'error' %}alert-danger{% endif %} alert-dismissible fade show d-sm-inline-flex" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+      {% endif %}
 
   <!-- Filter -->
   <div class="row mt-2 mb-2">
@@ -65,7 +75,7 @@
                   <button type="submit" class="btn btn-primary">Search</button>
                 </div>
                 <div class="col-auto">
-                  <a href="{% url 'home' %}" class="btn btn-danger">Back to See All</a>
+                  <a href="{% url 'person_detector:home' %}" class="btn btn-danger">Back to See All</a>
                 </div>
               </div>
             </form>
@@ -106,6 +116,15 @@
   </div>
   <!-- Akhir Tabel -->
 </div>
+
+
+<script>
+  document.getElementById('start-detection-btn').addEventListener('click', function() {
+    this.innerHTML = 'Camera Has Opened';  // Mengubah teks tombol menjadi "Loading..."
+    this.classList.add('disabled');  // Menambahkan class "disabled" untuk menonaktifkan tombol
+    this.querySelector('.loading-icon').classList.add('show');  // Menampilkan ikon loading
+  });
+</script>
 
 {% endblock content %}
     

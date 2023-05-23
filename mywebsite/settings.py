@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'person_detector',
+    'memory_tray_detector',
     'django_filters',
 ]
 

@@ -1,0 +1,8 @@
+.loading-icon {
+    display: none;
+    margin-left: 5px;
+  }
+
+.loading-icon.show {
+    display: inline-block;
+}
