@@ -7,7 +7,6 @@ class CameraFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(
         label="Name",
         lookup_expr='icontains',
-        # choices=Camera.objects.values_list('name', 'name').distinct(),
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     class Meta:
@@ -17,14 +16,16 @@ class CameraFilter(django_filters.FilterSet):
         ]
 
 class GalleryFilter(django_filters.FilterSet):
-    name = django_filters.ChoiceFilter(
+    name = django_filters.ModelChoiceFilter(
         label="Camera",
-        choices=Camera.objects.values_list('name', 'name').distinct(),
+        queryset=Camera.objects.all(),
+        field_name='name',
+        to_field_name='id',
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+
     class Meta:
         model = Gallery
-        fields = [
-            'name'
-        ]
+        fields = ['name']
+
     
