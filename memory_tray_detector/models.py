@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+# Models untuk Camera
 class Camera(models.Model):
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=50, null=True)
@@ -10,12 +11,14 @@ class Camera(models.Model):
 
     def __str__(self):
         return self.name
-    
+        
+# Ketika suatu instance Camera ditambahkan oleh user maka satu CamCard akan dibuat secara otomatis
 @receiver(post_save, sender=Camera)
 def create_camcard(sender, instance, created, **kwargs):
     if created:
         CamCard.objects.create(name=instance)
 
+# Models untuk Card yang digunakan untuk menampung informasi dari object yang dipotret yang ditampilkan di page Home
 class CamCard(models.Model):
     name = models.ForeignKey(Camera, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
@@ -24,6 +27,7 @@ class CamCard(models.Model):
     def __str__(self):
         return self.name.name
     
+# Models untuk Gallery 
 class Gallery(models.Model):
     name = models.ForeignKey(Camera, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='memory_tray_detector', null=True)

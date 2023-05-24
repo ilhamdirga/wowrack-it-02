@@ -32,10 +32,11 @@ def open_camera(save_folder, cam_id):
             # Generate photo name
             photo_name = f'{camera.name}-{photo_counter}.jpg'
 
+            # Save photo ke direktory
             photo_path = os.path.join(save_folder, photo_name)
             cv2.imwrite(photo_path, frame)
 
-            # Simpan foto ke models Gallery
+            # Simpan photo ke models Gallery
             quantity = 1
             picture = os.path.join('memory_tray_detector', photo_name)
             current_time = datetime.now()

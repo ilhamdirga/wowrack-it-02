@@ -1,6 +1,7 @@
 from django import forms
 from .models import Camera
 
+# Form untuk user menambahkan Camera
 class AddCameraForm(forms.ModelForm):
     class Meta:
         model = Camera

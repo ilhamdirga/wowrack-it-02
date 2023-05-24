@@ -3,6 +3,7 @@ from .models import Camera, Gallery
 
 import django_filters
 
+# Untuk memfilter list camera
 class CameraFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(
         label="Name",
@@ -15,6 +16,7 @@ class CameraFilter(django_filters.FilterSet):
             'name'
         ]
 
+# Untuk memnfilter list photo di Gallery berdasarkan nama Camera dalam bentuk choice
 class GalleryFilter(django_filters.FilterSet):
     name = django_filters.ModelChoiceFilter(
         label="Camera",

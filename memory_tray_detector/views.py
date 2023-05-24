@@ -5,24 +5,31 @@ from .forms import AddCameraForm
 from .filters import CameraFilter, GalleryFilter
 from .ml_models.camera import open_camera
 from django.conf import settings
-# from memory_tray_detector.models import Gallery
 
 import os
 
-# Create your views here.
+# page Home
 def home(request):
+    # Mengakses semua instance CamCard
     cam_card = CamCard.objects.all()
+
     context = {
         'title': 'Memory Tray Detector | Home',
         'cam_card': cam_card
     }
     return render(request, 'memory_tray_detector/home.html', context)
 
+# page camera
 def camera(request):
+    # Mengakses instance Camera
     camera = Camera.objects.all()
-    total_cam = len(camera)
+
+    # Mengimplementasikan filters untuk list camera
     myFilters = CameraFilter(request.GET, queryset=camera)
     camera = myFilters.qs
+
+    total_cam = len(camera) # Menghitung banyaknya camera
+
     context = {
         'title': 'Memory Tray Detector : Camera',
         'camera': camera,
@@ -31,11 +38,13 @@ def camera(request):
     }
     return render(request, 'memory_tray_detector/camera.html', context)
 
+# Membuka camera berdasarkan ID instance Camera
 def open_cam(request, camera_id):
     if request.method == 'GET':
+        # Inisiasi tempat menyimpan photo yang dipotret
         save_folder = os.path.join(settings.BASE_DIR, 'static', 'images', 'memory_tray_detector')
 
-        # Check apakah Camera terbuka
+        # Check apakah camera terbuka
         if request.session.get('camera_open') and request.session['camera_open'] == camera_id:
             messages.error(request, 'Camera sedang terbuka')
             return redirect('memory_tray_detector:home')
@@ -50,12 +59,14 @@ def open_cam(request, camera_id):
 
     return redirect('memory_tray_detector:home')
 
+# Menambahkan instance Camera
 def add_camera(request):
     add_form = AddCameraForm(request.POST or None)
     if request.method == 'POST':
         if add_form.is_valid():
             name = add_form.cleaned_data['name']
             ip_camera = add_form.cleaned_data['ip_camera']
+
             #validasi agar name dan ip camera yang diinput tidak sama dengan name yang sudah ada
             if Camera.objects.filter(name=name).exists():
                 messages.error(request, 'Nama sudah ada di database.')
@@ -65,6 +76,8 @@ def add_camera(request):
                 return redirect('memory_tray_detector:camera')
  
             add_form.save()
+
+            # messages ketika instance Camera berhasil ditambahkan
             messages.success(request, 'Camera berhasil ditambahkan')
             return redirect('memory_tray_detector:camera')
    
@@ -74,6 +87,7 @@ def add_camera(request):
     }
     return render(request, 'memory_tray_detector/add_camera.html', context)
 
+# Untuk menghapus instance Camera
 def delete(request, delete_id):
     cam_object = Camera.objects.get(id = delete_id)
     cam_object.delete()
@@ -81,6 +95,7 @@ def delete(request, delete_id):
 
     return redirect('memory_tray_detector:camera')
 
+# Untuk menghapus photo di Gallery
 def delete_gallery(request, delete_id):
     gal_object = Gallery.objects.get(id = delete_id)
     gal_object.delete()
@@ -88,11 +103,12 @@ def delete_gallery(request, delete_id):
 
     return redirect('memory_tray_detector:gallery')
 
+# Untuk Update instance Camera
 def update(request, update_id):
     cam_update = Camera.objects.get(id = update_id)
     if request.method == 'POST':
         form_cam_update = AddCameraForm(request.POST or None, instance=cam_update)
-        form_cam_update.fields['name'].disabled = True
+        form_cam_update.fields['name'].disabled = True # Agar user tidak diperbolehkan mengupdate field name
         if form_cam_update.is_valid():
             form_cam_update.save()
 
@@ -107,11 +123,16 @@ def update(request, update_id):
         }
     return render(request, 'memory_tray_detector/add_camera.html', context)
 
+# page Gallery
 def gallery(request):
-    gall = Gallery.objects.all().order_by('-id')
+    # Untuk mengakses semua instance di Gallery
+    gall = Gallery.objects.all().order_by('-id') # diurutkan dari yang paling baru 
+
+    # Mengimplementasikan filters untuk list instance di Gallery
     myFilters = GalleryFilter(request.GET, queryset=gall)
     gall = myFilters.qs
-    total_pic = len(gall)
+
+    total_pic = len(gall) # banyaknya instance di Gallery
     context = {
         'title': 'Memory Tray Detector | Gallery',
         'gallery': gall,
