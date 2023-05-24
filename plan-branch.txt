@@ -1,0 +1,8 @@
+-master
+-staging
+-dev : 
+    * webapp
+    * detector
+        *person-detector
+        *trash-can-detector
+        *memory-tray-detector
