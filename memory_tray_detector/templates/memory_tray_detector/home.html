@@ -49,7 +49,7 @@
                 <p class="card-text">Quantity : {{card.quantity}}</p>
                 <p class="card-text">Last Capture : {{card.timestamp}}</p>
                 <div class="text-center">
-                  <a href="{% url 'memory_tray_detector:open-cam' card.id %}" class="btn btn-primary">Open Camera</a>
+                  <a href="{% url 'memory_tray_detector:open-cam' camera_id=card.name.id%}" class="btn btn-primary">Open Camera</a>
                 </div>
               </div>
             </div>

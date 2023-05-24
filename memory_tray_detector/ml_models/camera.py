@@ -5,6 +5,7 @@ from datetime import datetime
 
 from django.conf import settings
 from memory_tray_detector.models import Gallery, Camera, CamCard
+from django.shortcuts import get_object_or_404
 
 def open_camera(save_folder, cam_id):
     cam = cv2.VideoCapture(0)
@@ -19,12 +20,14 @@ def open_camera(save_folder, cam_id):
 
     while True:
         check, frame = cam.read()
-        cv2.imshow(f'{Camera.objects.get(id = cam_id).name}', frame)
+
+        # Mengambil instance camera sesuai Camera ID
+        camera = get_object_or_404(Camera, id=cam_id)
+        
+        cv2.imshow(f'{camera.name}', frame)
         key = cv2.waitKey(1)
 
-        if key == 32:
-            # Ambil instance Camera pertama
-            camera = Camera.objects.get(id = cam_id)
+        if key == 32:           
 
             # Generate photo name
             photo_name = f'{camera.name}-{photo_counter}.jpg'
@@ -53,6 +56,3 @@ def open_camera(save_folder, cam_id):
     # Simpan nilai counter ke dalam file
     with open(counter_file, 'wb') as f:
         pickle.dump(photo_counter, f)
-
-# Panggil fungsi open_camera()
-# open_camera()

@@ -31,17 +31,22 @@ def camera(request):
     }
     return render(request, 'memory_tray_detector/camera.html', context)
 
-def open_cam(request, cam_id):
+def open_cam(request, camera_id):
     if request.method == 'GET':
-        # Cek apakah kamera sudah terbuka sebelumnya
-        if 'camera_open' in request.session:
+        save_folder = os.path.join(settings.BASE_DIR, 'static', 'images', 'memory_tray_detector')
+
+        # Check apakah Camera terbuka
+        if request.session.get('camera_open') and request.session['camera_open'] == camera_id:
             messages.error(request, 'Camera sedang terbuka')
             return redirect('memory_tray_detector:home')
 
-        save_folder = os.path.join(settings.BASE_DIR, 'static', 'images', 'memory_tray_detector')
-        request.session['camera_open'] = True
-        open_camera(save_folder,cam_id)
-        del request.session['camera_open']  # Hapus status kamera terbuka setelah selesai
+        # Set session variable untuk open camera
+        request.session['camera_open'] = camera_id
+
+        open_camera(save_folder, camera_id)
+
+        # Menghapus session setelah camera tertutup
+        del request.session['camera_open']
 
     return redirect('memory_tray_detector:home')
 
