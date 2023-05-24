@@ -72,8 +72,10 @@
               <td class="text-center align-middle">{{data.name}}</td>
               <td class="text-center align-middle">
                 {% if data.picture %}
-                   <img src="{{data.picture.url}}" alt="" width="90px">
-                  {% endif %} 
+                   <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#photo-{{data.id}}">
+                      <img src="{{data.picture.url}}" alt="" width="90px">
+                   </button>
+                {% endif %} 
               </td>
               <td class="text-center align-middle">{{data.quantity}}</td>
               <td class="text-center align-middle">{{data.timestamp}}</td>
@@ -82,7 +84,7 @@
                   Delete
                 </button>
               </td>
-              <!-- Modal -->
+              <!-- Modal Delete-->
               <div class="modal fade" id="delete-{{data.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
@@ -100,6 +102,21 @@
                   </div>
                 </div>
               </div>
+              <!-- Modal Photo -->
+               <div class="modal fade" id="photo-{{data.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">{{data.name}} | {{data.timestamp}}</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                      <img src="{{data.picture.url}}" alt="" width="450px">
+                    </div>
+                  </div>
+                </div>
+              </div>
+               <!--Akhir Modal  -->
             </tr>
           {% endfor %}             
         </tbody>

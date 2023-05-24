@@ -109,10 +109,9 @@ def update(request, update_id):
 
 def gallery(request):
     gall = Gallery.objects.all().order_by('-id')
-    total_pic = len(gall)
-
     myFilters = GalleryFilter(request.GET, queryset=gall)
     gall = myFilters.qs
+    total_pic = len(gall)
     context = {
         'title': 'Memory Tray Detector | Gallery',
         'gallery': gall,

@@ -19,7 +19,7 @@ def create_camcard(sender, instance, created, **kwargs):
 class CamCard(models.Model):
     name = models.ForeignKey(Camera, on_delete=models.CASCADE)
     quantity = models.IntegerField(null=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.name.name

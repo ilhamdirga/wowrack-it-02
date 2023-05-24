@@ -46,8 +46,10 @@
             <div class="card" style="width: 18rem;">
               <div class="card-body">
                 <h5 class="card-title text-center">{{card.name}}</h5>
-                <p class="card-text">Quantity : {{card.quantity}}</p>
-                <p class="card-text">Last Capture : {{card.timestamp}}</p>
+                {% with camcard=card.camcard_set.last %}
+                <p class="card-text">Quantity: {{ camcard.quantity }}</p>
+                <p class="card-text">Last Capture: {{ camcard.timestamp }}</p>
+                {% endwith %}
                 <div class="text-center">
                   <a href="{% url 'memory_tray_detector:open-cam' camera_id=card.name.id%}" class="btn btn-primary">Open Camera</a>
                 </div>
