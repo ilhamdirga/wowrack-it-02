@@ -92,11 +92,11 @@ def open_camera():
                 last_print_time = time.time()  # Memperbarui waktu terakhir pesan dicetak dan data disimpan
                 
                 formatted_time = current_time.strftime('%d%m%Y')
-                message = {
-                    'name': identity,
-                    'timestamp': formatted_time
-                }
-                send_mqtt_message(message)
+                # message = {
+                #     'name': identity,
+                #     'timestamp': formatted_time
+                # }
+                # send_mqtt_message(message)
                 print(f"Nama wajah terdeteksi: {identity}; Waktu: {current_time}")
                 
         cv2.putText(gbr1,identity, (100,100),cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)

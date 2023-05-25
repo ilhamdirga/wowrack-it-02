@@ -4,6 +4,9 @@ import pickle
 from datetime import datetime
 import time
 
+from django.contrib import messages
+from django.shortcuts import redirect
+
 from django.conf import settings
 from memory_tray_detector.models import Gallery, Camera, CamCard
 from django.shortcuts import get_object_or_404
@@ -11,9 +14,9 @@ from django.shortcuts import get_object_or_404
 def open_camera(save_folder, cam_id):
     # Mengambil instance camera sesuai Camera ID
     camera = get_object_or_404(Camera, id=cam_id)
-    address = camera.ip_camera
+    # address = camera.ip_camera
     cam = cv2.VideoCapture(0)
-    cam.open(address)
+    # cam.open(address)
 
     # Cek apakah file counter sudah ada
     counter_file = os.path.join(settings.BASE_DIR, 'memory_tray_detector', 'ml_models', 'counter.pkl')
@@ -27,9 +30,8 @@ def open_camera(save_folder, cam_id):
     text_timer = 0
     display_time = 2
 
-    camera_open = True
-
-    while camera_open:
+    
+    while True:
         check, frame = cam.read()
 
          # Menambahkan teks ke frame
@@ -77,7 +79,7 @@ def open_camera(save_folder, cam_id):
             text_timer = time.time()
 
         elif key == 27:
-            camera_open = False
+            break
 
     cam.release()
     cv2.destroyAllWindows()
