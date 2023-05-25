@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'person_detector',
     'memory_tray_detector',
     'django_filters',
+    'trash_can_detector'
 ]
 
 MIDDLEWARE = [

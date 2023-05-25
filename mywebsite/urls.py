@@ -12,6 +12,7 @@ urlpatterns = [
     path('', views.index),
     path('person-detector/', include('person_detector.urls')),
     path('memory-tray-detector/', include('memory_tray_detector.urls')),
+    path('trash-can-detector/', include('trash_can_detector.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

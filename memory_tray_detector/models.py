@@ -5,8 +5,8 @@ from django.dispatch import receiver
 # Models untuk Camera
 class Camera(models.Model):
     name = models.CharField(max_length=20)
-    description = models.CharField(max_length=50, null=True)
-    ip_camera = models.IntegerField(null=True)
+    description = models.CharField(max_length=100, null=True)
+    ip_camera = models.CharField(max_length=200,null=True)
     date_created = models.DateField(auto_now_add=True)
 
     def __str__(self):

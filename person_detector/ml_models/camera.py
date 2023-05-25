@@ -37,7 +37,9 @@ def send_mqtt_message(message):
         print("Error saat mengirim pesan MQTT:", str(e))
 
 def open_camera():
+    # address = 'http://192.168.242.101:8080/video'
     cap = cv2.VideoCapture(0)
+    # cap.open(address)
     last_print_time = time.time()
 
     if not cap.isOpened():

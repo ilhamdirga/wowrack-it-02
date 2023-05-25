@@ -69,7 +69,7 @@ def add_camera(request):
 
             #validasi agar name dan ip camera yang diinput tidak sama dengan name yang sudah ada
             if Camera.objects.filter(name=name).exists():
-                messages.error(request, 'Nama sudah ada di database.')
+                messages.error(request, f'Nama {name} sudah ada di database.')
                 return redirect('memory_tray_detector:camera')
             elif Camera.objects.filter(ip_camera=ip_camera).exists():
                 messages.error(request, 'Alamat IP Camera sudah ada di database.')
@@ -78,7 +78,7 @@ def add_camera(request):
             add_form.save()
 
             # messages ketika instance Camera berhasil ditambahkan
-            messages.success(request, 'Camera berhasil ditambahkan')
+            messages.success(request, 'Added Camera Success')
             return redirect('memory_tray_detector:camera')
    
     context = {
@@ -99,7 +99,7 @@ def delete(request, delete_id):
 def delete_gallery(request, delete_id):
     gal_object = Gallery.objects.get(id = delete_id)
     gal_object.delete()
-    messages.success(request, 'Data berhasil dihapus')
+    messages.success(request, 'Deleted Success')
 
     return redirect('memory_tray_detector:gallery')
 
@@ -110,9 +110,15 @@ def update(request, update_id):
         form_cam_update = AddCameraForm(request.POST or None, instance=cam_update)
         form_cam_update.fields['name'].disabled = True # Agar user tidak diperbolehkan mengupdate field name
         if form_cam_update.is_valid():
+            # Validasi agar alamat ip camera yang diupdate tidak sama dengan ip camera yang sudah ada
+            ip_camera = form_cam_update.cleaned_data['ip_camera']
+            if Camera.objects.filter(ip_camera=ip_camera).exists():
+                messages.error(request, 'Alamat IP Camera sudah ada di database.')
+                return redirect('memory_tray_detector:camera')
+
             form_cam_update.save()
 
-            messages.success(request, 'Camera berhasil diupdate')
+            messages.success(request, 'Updated Succes')
             return redirect('memory_tray_detector:camera')
     else:
         form_cam_update = AddCameraForm(instance=cam_update)

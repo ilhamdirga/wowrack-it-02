@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    {{title}}
+{% endblock title %}
+
+{% block list %}
+  <li class="nav-item ps-4">
+    <a class="nav-link active" aria-current="page" href="{% url 'trash_can_detector:home' %}">Home</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'trash_can_detector:camera' %}">Camera</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'trash_can_detector:gallery' %}">Gallery</a>
+  </li>
+  <li class="nav-item ps-4">
+    <a class="nav-link" href="{% url 'trash_can_detector:logout' %}">Log Out</a>
+  </li>    
+{% endblock list %}
+
+
+{% block content %}
+  <div class="container mt-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+
+    <h5>Trash Can Detector | Home</h5>
+
+    <!-- messages -->
+    <div>
+      {% if messages %}
+        {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'success' %}alert-success{% elif msg.tags == 'error' %}alert-danger{% endif %} alert-dismissible fade show d-sm-inline-flex" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Card -->
+    <div class="align-items-center">
+      <div class="row">
+        {% for card in cam_card %}
+          <div class="col-sm-3">
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title text-center">{{card.name}}</h5>
+                {% with camcard=card.camcard_set.last %}
+                <p class="card-text">Quantity: {{ camcard.quantity }}</p>
+                <p class="card-text">Last Capture: {{ camcard.timestamp }}</p>
+                {% endwith %}
+                <div class="text-center">
+                  <a href="{% url 'trash_can_detector:open-cam' camera_id=card.name.id%}" class="btn btn-primary">Open Camera</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div> 
+    <!-- Akhir Card -->
+
+  </div>
+{% endblock content %}
+  
+    
