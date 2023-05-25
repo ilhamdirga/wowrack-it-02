@@ -3,8 +3,8 @@ from django.contrib import messages
 from .models import Post, DetectedFace
 from .forms import PostForm
 from django.http import HttpResponse
-from .ml_models.test import train
-from .ml_models.camera import open_camera
+# from .ml_models.test import train
+from .ml_models.main import open_camera
 from .filters import DatabaseFilter, DetectedFilter
 from django.conf import settings
 from datetime import date
@@ -89,15 +89,15 @@ def post_database(request):
     }
     return render(request, 'person_detector/add_database.html', context)
 
-def train_data(request):
-    image_folder = 'static/images/person_detector/'
-    folder = os.path.join(settings.BASE_DIR, image_folder)
+# def train_data(request):
+#     image_folder = 'static/images/person_detector/'
+#     folder = os.path.join(settings.BASE_DIR, image_folder)
     
-    train(folder)
+#     train(folder)
 
-    if True:
-        messages.success(request, 'Data berhasil ditrain')
-        return redirect('person_detector:database')
+#     if True:
+#         messages.success(request, 'Data berhasil ditrain')
+#         return redirect('person_detector:database')
 
 def delete(request, delete_id):
     objcet = Post.objects.get(id = delete_id)
