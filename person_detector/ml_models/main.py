@@ -13,6 +13,9 @@ import time
 from django.conf import settings
 from person_detector.models import DetectedFace
 
+import paho.mqtt.client as mqtt
+import json
+
 haarscascade_path = os.path.join(settings.BASE_DIR, 'person_detector', 'ml_models', 'haarcascade.xml')
 detector = cv2.CascadeClassifier(haarscascade_path)
 
@@ -60,6 +63,20 @@ def buat_database():
         img = cv2.resize(img, (105,105), interpolation=cv2.INTER_AREA)/255.
         database[image.split('.')[0]] = img
     return database
+
+def send_mqtt_message(message):
+    try:
+        client = mqtt.Client()
+        client.connect("localhost", 1883)
+
+        topic = 'mtray'
+        json_message = json.dumps(message)
+        client.publish(topic, json_message)
+
+        client.disconnect()
+    except Exception as e:
+        print("Error saat mengirim pesan MQTT:", str(e))
+
 
 new_model = model()
 file_path = os.path.join(settings.BASE_DIR, 'person_detector', 'ml_models', 'siamese_weights.h5')

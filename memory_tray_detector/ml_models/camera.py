@@ -3,6 +3,8 @@ import os
 import pickle
 from datetime import datetime
 import time
+import paho.mqtt.client as mqtt
+import json
 
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -10,6 +12,20 @@ from django.shortcuts import redirect
 from django.conf import settings
 from memory_tray_detector.models import Gallery, Camera, CamCard
 from django.shortcuts import get_object_or_404
+
+def send_mqtt_message(message):
+    try:
+        client = mqtt.Client()
+        client.connect("localhost", 1883)
+
+        topic = 'mtray'
+        json_message = json.dumps(message)
+        client.publish(topic, json_message)
+
+        client.disconnect()
+    except Exception as e:
+        print("Error saat mengirim pesan MQTT:", str(e))
+
 
 def open_camera(save_folder, cam_id):
     # Mengambil instance camera sesuai Camera ID
@@ -64,6 +80,15 @@ def open_camera(save_folder, cam_id):
                                              timestamp = current_time
                                              )
             gallery.save()
+
+            formatted_time = current_time.strftime('%d%m%Y')
+            message = {
+                    'name': camera.name,
+                    'quantity': str(quantity),
+                    'timestamp': formatted_time
+                }
+            send_mqtt_message(message)
+
 
             # Mengambil objek CamCard yang terkait dengan objek Gallery yang baru dibuat
             camcard = CamCard.objects.get(name=camera)
