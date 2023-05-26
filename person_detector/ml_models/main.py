@@ -13,7 +13,7 @@ import time
 from django.conf import settings
 from person_detector.models import DetectedFace
 
-haarscascade_path = os.path.join('mywebsite', 'person_detector', 'ml_models', 'haarcascade.xml')
+haarscascade_path = os.path.join(settings.BASE_DIR, 'person_detector', 'ml_models', 'haarcascade.xml')
 detector = cv2.CascadeClassifier(haarscascade_path)
 
 def model():
@@ -72,20 +72,22 @@ def open_camera():
     # vid.open(address)
 
     last_print_time = time.time()
-    
+    teks = ''  # Inisialisasi variabel 'teks'
+    success = True
+    error = None
     while(True):
         ret, frame = vid.read()
 
         wajah = detector.detectMultiScale(frame, scaleFactor = 1.2, minNeighbors = 5)
-        
-        for x1, y1, w, h in wajah:
-            x2 = x1 + w
-            y2 = y1 + h
-            muka = frame[y1:y2, x1:x2]
-            muka = cv2.cvtColor(muka, cv2.COLOR_BGR2GRAY)
-            muka = cv2.resize(muka, (105,105), interpolation=cv2.INTER_AREA)/255.
-            hasil, label = prediksi_muka(muka, new_model)
-            teks = hasil_prediksi(hasil, label)
+        if wajah is not None:  # Tambahkan pengecekan None
+            for x1, y1, w, h in wajah:
+                x2 = x1 + w
+                y2 = y1 + h
+                muka = frame[y1:y2, x1:x2]
+                muka = cv2.cvtColor(muka, cv2.COLOR_BGR2GRAY)
+                muka = cv2.resize(muka, (105,105), interpolation=cv2.INTER_AREA)/255.
+                hasil, label = prediksi_muka(muka, new_model)
+                teks = hasil_prediksi(hasil, label)
 
         if teks:
             current_time = datetime.datetime.now()
@@ -111,3 +113,5 @@ def open_camera():
     vid.release()
 
     cv2.destroyAllWindows()
+
+    return success, error
