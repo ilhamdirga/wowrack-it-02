@@ -16,7 +16,7 @@
     <a class="nav-link" href="{% url 'trash_can_detector:gallery' %}">Gallery</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'trash_can_detector:logout' %}">Log Out</a>
+    <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#logout-user">Logout</a>
   </li>    
 {% endblock list %}
 
@@ -24,7 +24,29 @@
 {% block content %}
   <div class="container mt-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
 
-    <h5>Trash Can Detector | Home</h5>
+    <!-- modal untuk logout -->
+    <div class="modal fade" id="logout-user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-main text-light">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">LOGOUT</h1>
+            <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure to <strong>Logout</strong>?
+          </div>
+          <div class="modal-footer">
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <h5>Trash Can Detector | Home </h5>
+      <h5>Active | {{user.first_name}}</h5>
+    </div>
 
     <!-- messages -->
     <div>
@@ -38,25 +60,77 @@
       {% endif %}
     </div>
 
+    <!-- alert -->
+    <div class="alert alert-primary" role="alert">
+      You can predict the trash-can capacity by uploading a photo via the <strong>POST</strong> button or capturing it directly using the <strong>Open Camera</strong> button below.
+    </div>
+
+    <!-- Submit Picture -->
+    <div class="row mt-2 mb-2">
+      <div class="col">
+        <div class="card card-body">
+          <div class="d-flex justify-content-between">
+            <div>
+              <form method="POST" enctype="multipart/form-data" class="row g-2 align-items-center">
+                {% csrf_token %}
+                <div class="col-auto align-middle">
+                  {{forms.name.label}}
+                </div>
+                <div class="col-auto">
+                    {{forms.name}}
+                </div>   
+                
+
+                <div class="col-auto align-middle">
+                  {{forms.picture.label}}
+                </div>
+                <div class="col-auto">
+                  {{forms.picture}}
+                </div> 
+               
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-primary">POST</button>
+                </div>
+              </form>
+            </div>
+            <div>
+              <p>Total Current Trash Can : <strong>{{total_trash_can}}</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h5>Trash-Can Information</h5>
+
     <!-- Card -->
     <div class="align-items-center">
       <div class="row">
+        <div class="row justify-content-start">
         {% for card in cam_card %}
-          <div class="col-sm-3">
-            <div class="card" style="width: 18rem;">
+          <div class="col-sm-3 mb-4">
+            <div class="card shadow-sm">
               <div class="card-body">
                 <h5 class="card-title text-center">{{card.name}}</h5>
-                {% with camcard=card.camcard_set.last %}
-                <p class="card-text">Quantity: {{ camcard.quantity }}</p>
-                <p class="card-text">Last Capture: {{ camcard.timestamp }}</p>
-                {% endwith %}
+                <p class="card-text">Quantity: {{gallery.quantity}}</p>
+                <p class="card-text">Time Last Count: {{gallery.timestamp}}</p>
                 <div class="text-center">
-                  <a href="{% url 'trash_can_detector:open-cam' camera_id=card.name.id%}" class="btn btn-primary">Open Camera</a>
+                  <div class="dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Open Camera
+                    </a>
+                  
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'trash_can_detector:open-cam-local' camera_id=card.name.id %}">Local Camera</a></li>
+                      <li><a href="{% url 'trash_can_detector:open-cam' camera_id=card.name.id%}" class="dropdown-item">IP Camera</a></li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         {% endfor %}
+      </div>
       </div>
     </div> 
     <!-- Akhir Card -->

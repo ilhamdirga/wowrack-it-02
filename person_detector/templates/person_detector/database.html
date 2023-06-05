@@ -14,7 +14,7 @@
     <a class="nav-link active" aria-current="page" href="{% url 'person_detector:database' %}">Database</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'person_detector:gallery' %}">Log Out</a>
+    <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#logout-user">Logout</a>
   </li>
 {% endblock list %}
   
@@ -27,10 +27,36 @@
     
     <div class="container mt-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
 
-      <h5>Person Detector | Database</h5>
+      <!-- modal untuk logout -->
+      <div class="modal fade" id="logout-user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-main text-light">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">LOGOUT</h1>
+              <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Are you sure to <strong>Logout</strong>?
+            </div>
+            <div class="modal-footer">
+              <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <h5>Person Detector | Database </h5>
+        <h5>Active | {{user.first_name}}</h5>
+      </div>
 
 
-      <a href="{% url 'person_detector:add-database' %}" class="btn btn-primary my-1">Add Person</a>
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'person_detector:add-database' %}" class="btn btn-primary my-1">Add Person</a>
+
+      <p class="mb-0 mt-0 d-flex align-items-end">Current Data : <strong>{{total_data}}</strong></p>
+      </div>
       
       
       <!-- messages -->
@@ -67,9 +93,7 @@
                   
                 </form>
               </div>
-              <div>
-                <p>Current Data : <strong>{{total_data}}</strong></p>
-              </div>
+
             </div>
           </div>
         </div>
@@ -111,9 +135,9 @@
                 <div class="modal fade" id="delete-{{data.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                      <div class="modal-header">
+                      <div class="modal-header bg-main text-light">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">DELETE</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
                         Are you sure to delete <strong>"{{data.name}}"</strong> data?

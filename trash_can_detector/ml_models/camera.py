@@ -3,16 +3,88 @@ import os
 import pickle
 from datetime import datetime
 import time
+import paho.mqtt.client as mqtt
+import json
 
 from django.conf import settings
 from trash_can_detector.models import Gallery, Camera, CamCard
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
+
+# def send_mqtt_message(message):
+#     try:
+#         client = mqtt.Client()
+#         client.connect("localhost", 1883)
+
+#         topic = 'trashcan'
+#         json_message = json.dumps(message)
+#         client.publish(topic, json_message)
+
+#         client.disconnect()
+#     except Exception as e:
+#         print("Error saat mengirim pesan MQTT:", str(e))
+
+# Konfigurasi MQTT
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to MQTT Broker")
+    else:
+        print("Failed to connect, return code %d" % rc)
+
+def on_publish(client, userdata, mid):
+    print("Message successfully published")
+
+def on_disconnect(client, userdata, rc):
+    print("Disconnected from MQTT Broker")
+
+def connect_mqtt():
+    client = mqtt.Client()
+    client.username_pw_set("ea64a3ae-b6fb-4ffa-934c-017f22928eb5", "i5G0SWEn0r3FhDxVEYvoQKDLd9KnRjlT9YDABvVCuZtSTpZJfrxRaR68hGKcYqlrp5rTpumrxwttqlxz")  # Ganti dengan nama pengguna dan kata sandi yang sesuai
+    client.on_connect = on_connect
+    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
+
+    # Ganti dengan alamat dan port broker MQTT yang sesuai
+    broker_address = "telemetry.iotstadium.com"
+    port = 1883
+
+    try:
+        client.connect(broker_address, port)
+        client.loop_start()
+        return client
+    except Exception as e:
+        print("Error connecting to MQTT Broker:", str(e))
+        return None
+
+def send_mqtt_message(client, topic, message):
+    try:
+        json_message = json.dumps(message)
+        result, mid = client.publish(topic, json_message)
+        if result == mqtt.MQTT_ERR_SUCCESS:
+            print('Message successfully sent')
+        else:
+            print('Failed to send message, return code %d' % result)
+    except Exception as e:
+        print("Error sending MQTT message:", str(e))
+
+def disconnect_mqtt(client):
+    client.loop_stop()
+    client.disconnect()
+
+def send_message_to_mqtt(pesan):
+    client = connect_mqtt()
+    if client:
+        topic = 'ea64a3ae-b6fb-4ffa-934c-017f22928eb5'
+        message = pesan
+        send_mqtt_message(client, topic, message)
+        disconnect_mqtt(client)
+# Akhir Konfigurasi
 
 def open_camera(save_folder, cam_id):
     # Mengambil instance camera sesuai Camera ID
     camera = get_object_or_404(Camera, id=cam_id)
-    # address = camera.ip_camera
-    cam = cv2.VideoCapture(0)
+    address = camera.ip_camera
+    cam = cv2.VideoCapture(address)
     # cam.open(address)
 
     # Cek apakah file counter sudah ada
@@ -61,6 +133,15 @@ def open_camera(save_folder, cam_id):
                                              timestamp = current_time
                                              )
             gallery.save()
+            
+            formatted_time = current_time.strftime('%d%m%Y%H%M%S')
+            message = {
+                    'name': camera.name,
+                    'status': str(quantity),
+                    'timestamp': formatted_time
+                    }
+            send_message_to_mqtt(message)
+
 
             # Mengambil objek CamCard yang terkait dengan objek Gallery yang baru dibuat
             camcard = CamCard.objects.get(name=camera)

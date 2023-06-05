@@ -12,7 +12,14 @@ class Camera(models.Model):
     def __str__(self):
         return self.name
         
-# Ketika suatu instance Camera ditambahkan oleh user maka satu CamCard akan dibuat secara otomatis
+class ListCamera(models.Model):
+    name = models.ForeignKey(Camera, on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to='memory_tray_detector', null=True)
+
+    def __str__(self):
+        return self.name
+
+# Ketika suatu instance Camera ditambahkan oleh user, maka satu CamCard akan dibuat secara otomatis
 @receiver(post_save, sender=Camera)
 def create_camcard(sender, instance, created, **kwargs):
     if created:
@@ -33,6 +40,7 @@ class Gallery(models.Model):
     picture = models.ImageField(upload_to='memory_tray_detector', null=True)
     quantity = models.IntegerField(null=True)
     timestamp = models.DateTimeField()
+    detected_day = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name.name

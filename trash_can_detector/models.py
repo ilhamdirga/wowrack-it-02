@@ -6,8 +6,15 @@ from django.dispatch import receiver
 class Camera(models.Model):
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=100, null = True)
-    ip_camera = models.IntegerField(null=True)
+    ip_camera = models.CharField(max_length=200, null=True)
     date_created = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+    
+class ListCamera(models.Model):
+    name = models.ForeignKey(Camera, on_delete=models.CASCADE)
+    picture = models.ImageField(upload_to='trash_can_detector', null=True)
 
     def __str__(self):
         return self.name
@@ -30,9 +37,10 @@ class CamCard(models.Model):
 # Models untuk Gallery 
 class Gallery(models.Model):
     name = models.ForeignKey(Camera, on_delete=models.CASCADE)
-    picture = models.ImageField(upload_to='memory_tray_detector', null=True)
+    picture = models.ImageField(upload_to='trash_can_detector', null=True)
     quantity = models.IntegerField(null=True)
     timestamp = models.DateTimeField()
+    detected_day = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name.name

@@ -136,3 +136,9 @@ MEDIA_ROOT = BASE_DIR / "static/images"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL_PERSON_DETECTOR = 'person_detector:login'
+
+LOGIN_URL_MEMORY_TRAY_DETECTOR = 'memory_tray_detector:login'
+
+LOGIN_URL_TRASH_CAN_DETECTOR = 'trash_can_detector:login'

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Camera
+from .models import Camera, ListCamera
 
 # Form untuk user menambahkan Camera
 class AddCameraForm(forms.ModelForm):
@@ -29,3 +29,13 @@ class AddCameraForm(forms.ModelForm):
                 }
             )
         }
+
+class ListCameraForm(forms.Form):
+    name = forms.ModelChoiceField(queryset=Camera.objects.all(), label='Select Memory Tray',widget=forms.Select(attrs={'class': 'form-select'}))
+    picture = forms.ImageField(label="Image", widget=forms.FileInput(attrs={'class': 'form-control'}))
+    class Meta:
+        model = ListCamera
+        fields = [
+            'name',
+            'picture'
+        ]

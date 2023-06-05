@@ -16,9 +16,14 @@
                         {{form}}
                     </div>
                 {% endfor %}
+                {% if update_data.picture %}
+                    <img src="{{update_data.picture.url}}" alt="" width="90px">
+                {% endif %} 
 
-                <button type="submit" class="btn btn-success my-4">Submit</button>
-                <a href="{% url 'person_detector:database' %}" class="btn btn-danger">Back</a>
+                <div>
+                    <button type="submit" class="btn btn-success my-4">{{action}}</button>
+                    <a href="{% url 'person_detector:database' %}" class="btn btn-danger">Back</a>
+                </div>
 
             </form>
         </div>

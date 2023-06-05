@@ -64,18 +64,61 @@ def buat_database():
         database[image.split('.')[0]] = img
     return database
 
-def send_mqtt_message(message):
+# Konfigurasi MQTT
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to MQTT Broker")
+    else:
+        print("Failed to connect, return code %d" % rc)
+
+def on_publish(client, userdata, mid):
+    print("Message successfully published")
+
+def on_disconnect(client, userdata, rc):
+    print("Disconnected from MQTT Broker")
+
+def connect_mqtt():
+    client = mqtt.Client()
+    client.username_pw_set("87f91c55-b35f-46dc-b876-60606d526e4a", "M44o0Tz3DotSYbOQuIfOvwVlhVgVz0BDQcg4kTKeAQMUtAHzC4h6kdki7RkpeUBzWH5xjW7rmPYeDUCc")  # Ganti dengan nama pengguna dan kata sandi yang sesuai
+    client.on_connect = on_connect
+    client.on_publish = on_publish
+    client.on_disconnect = on_disconnect
+
+    # Ganti dengan alamat dan port broker MQTT yang sesuai
+    broker_address = "telemetry.iotstadium.com"
+    port = 1883
+
     try:
-        client = mqtt.Client()
-        client.connect("localhost", 1883)
-
-        topic = 'mtray'
-        json_message = json.dumps(message)
-        client.publish(topic, json_message)
-
-        client.disconnect()
+        client.connect(broker_address, port)
+        client.loop_start()
+        return client
     except Exception as e:
-        print("Error saat mengirim pesan MQTT:", str(e))
+        print("Error connecting to MQTT Broker:", str(e))
+        return None
+
+def send_mqtt_message(client, topic, message):
+    try:
+        json_message = json.dumps(message)
+        result, mid = client.publish(topic, json_message)
+        if result == mqtt.MQTT_ERR_SUCCESS:
+            print('Message successfully sent')
+        else:
+            print('Failed to send message, return code %d' % result)
+    except Exception as e:
+        print("Error sending MQTT message:", str(e))
+
+def disconnect_mqtt(client):
+    client.loop_stop()
+    client.disconnect()
+
+def send_message_to_mqtt(pesan):
+    client = connect_mqtt()
+    if client:
+        topic = '87f91c55-b35f-46dc-b876-60606d526e4a'
+        message = pesan
+        send_mqtt_message(client, topic, message)
+        disconnect_mqtt(client)
+# Akhir Konfigurasi
 
 
 new_model = model()
@@ -84,6 +127,7 @@ new_model.load_weights(file_path)
 database = buat_database()
 
 def open_camera():
+    
     # address = 'http://192.168.242.101:8080/video'
     vid = cv2.VideoCapture(0)
     # vid.open(address)
@@ -106,25 +150,31 @@ def open_camera():
                 hasil, label = prediksi_muka(muka, new_model)
                 teks = hasil_prediksi(hasil, label)
 
-        if teks:
-            current_time = datetime.datetime.now()
-            if time.time() - last_print_time >= 2:
-                detected_face = DetectedFace.objects.create(name=teks, detected_time=current_time)
-                detected_face.save()
-                last_print_time = time.time()  # Memperbarui waktu terakhir pesan dicetak dan data disimpan
-                    
-                formatted_time = current_time.strftime('%d%m%Y')
+                if teks:
+                    current_time = datetime.datetime.now()
+                    if time.time() - last_print_time >= 2:
+                        detected_face = DetectedFace.objects.create(name=teks, detected_time=current_time)
+                        detected_face.save()
+                        last_print_time = time.time()  # Memperbarui waktu terakhir pesan dicetak dan data disimpan
+                            
+                        formatted_time = current_time.strftime('%d%m%Y')
+                        pesan = {
+                            'name': teks,
+                            'timestamp': formatted_time
+                        }
+                        send_message_to_mqtt(pesan)
 
-                print(f"Nama wajah terdeteksi: {teks}; Waktu: {current_time}")
+                        print(f"Nama wajah terdeteksi: {teks}; Waktu: {current_time}")
 
-        frame = cv2.rectangle(frame, (x1,y1), (x2,y2), (255,255,255), 1)
-        frame = cv2.putText(frame, teks, (x1,y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
-        cv2.imshow('frame', frame)
+                frame = cv2.rectangle(frame, (x1,y1), (x2,y2), (255,255,255), 1)
+                frame = cv2.putText(frame, teks, (x1,y1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+                cv2.imshow('frame', frame)
         
         # print(f'terdeteksi: {teks}')
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
     
 
     vid.release()

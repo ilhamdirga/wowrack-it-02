@@ -16,7 +16,7 @@
     <a class="nav-link" href="{% url 'trash_can_detector:gallery' %}">Gallery</a>
   </li>
   <li class="nav-item ps-4">
-    <a class="nav-link" href="{% url 'trash_can_detector:logout' %}">Log Out</a>
+    <a class="nav-link" href="" data-bs-toggle="modal" data-bs-target="#logout-user">Logout</a>
   </li>    
 {% endblock list %}
 
@@ -28,8 +28,31 @@
   {% endblock add_camera %}
     
   <div class="container mt-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+
+    <!-- modal untuk logout -->
+    <div class="modal fade" id="logout-user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-main text-light">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">LOGOUT</h1>
+            <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure to <strong>Logut</strong>?
+          </div>
+          <div class="modal-footer">
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Title -->
-    <h5>Trash Can Detector | Camera</h5>
+    <div class="d-flex justify-content-between">
+      <h5>Trash Can Detector | Home </h5>
+      <h5>Active | {{user.first_name}}</h5>
+    </div>
     <!-- Button Add Camera -->
     <a href="{% url 'trash_can_detector:add-camera' %}" class="btn btn-primary my-1">Add Camera</a>
     <!-- messages -->
@@ -105,9 +128,9 @@
               <div class="modal fade" id="delete-{{data.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-main text-light">
                       <h1 class="modal-title fs-5" id="exampleModalLabel">DELETE</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                       Are you sure to delete <strong>"{{data.name}}"</strong> data?
