@@ -16,46 +16,7 @@ from django.contrib.auth.models import Group, User
 import os
 
 
-# def login_page(request):
-#     context = {
-#         'title': 'Person Detector | Login'
-#     }
-#     user = None
-#     group_name = 'person-detector-user'
-
-#     if request.method == 'POST':
-#         username_login = request.POST['username']
-#         password_login = request.POST['password']
-
-#         user = authenticate(request, username=username_login, password=password_login)
-
-#         if user is not None:
-#             person_detector_group = Group.objects.get(name=group_name)
-#             if person_detector_group in user.groups.all():
-#                 login(request, user)
-#                 return redirect('person_detector:home')
-#             else:
-#                 messages.error(request, 'Anda tidak memiliki akses')
-#                 return redirect('person_detector:login')
-#         else:
-#             messages.error(request, 'Username atau password anda salah')
-#             return redirect('person_detector:login')
-    
-#     if request.method == 'GET':
-#         if request.user.is_authenticated:
-#             # logika untuk user
-#             return redirect('person_detector:home')
-#         else:
-#             # logika untuk anonymous
-#             return render(request, 'person_detector/login.html', context)
-
-# def person_detector_user_check(user):
-#     group_name = 'person-detector-user'
-#     group = Group.objects.get(name=group_name)
-#     return group in user.groups.all()
-
 @login_required(login_url='login')
-# @user_passes_test(person_detector_user_check, login_url=settings.LOGIN_URL_PERSON_DETECTOR, redirect_field_name=None)
 def home(request):
     detected = DetectedFace.objects.all().order_by('-id')
     myFilters = DetectedFilter(request.GET, queryset=detected)
